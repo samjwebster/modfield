@@ -1,0 +1,460 @@
+//#region lib/utils.js
+var e = Math.PI * 2, t = (e, t, n, r) => {
+	let i = n - e, a = r - t;
+	return Math.sqrt(i * i + a * a);
+}, n = (e) => Math.PI / 180 * e, r = (e) => 180 / Math.PI * e, i = (e, t, n) => e + (t - e) * n, a = (e, t, n) => Math.max(t, Math.min(n, e)), o = (e, t) => Array.isArray(e) ? e[Math.floor(Math.random() * e.length)] : t === void 0 ? e === void 0 ? Math.random() : Math.random() * e : e + Math.random() * (t - e), s = class {
+	constructor(e, t) {
+		this.pos = e, this.modulator = t, this.weight = 1;
+	}
+	dist(e) {
+		return t(...this.pos, ...e);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, c = class {
+	constructor(e, t, n) {
+		this.pos = e, this.slope = t, this.modulator = n, this.weight = 1;
+	}
+	debug(e) {
+		if (!e) return;
+		let t = this.pos[1] + this.slope * (0 - this.pos[0]), n = e.canvas?.width || 800, r = this.pos[1] + this.slope * (n - this.pos[0]);
+		e.strokeStyle = "red", e.beginPath(), e.moveTo(0, t), e.lineTo(n, r), e.stroke();
+	}
+	dist(e) {
+		let [t, n] = e, [r, i] = this.pos, a = this.slope, o = a, s = i - a * r;
+		return Math.abs(o * t + -1 * n + s) / Math.sqrt(o * o + 1);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, l = class {
+	constructor(e, t, n) {
+		this.posA = e, this.posB = t, this.modulator = n, this.weight = 1;
+	}
+	dist(e) {
+		let [n, r] = e, [i, a] = this.posA, [o, s] = this.posB, c = n - i, l = r - a, u = o - i, d = s - a, f = c * u + l * d, p = u * u + d * d, m = -1;
+		p != 0 && (m = f / p);
+		let h, g;
+		return m < 0 ? (h = i, g = a) : m > 1 ? (h = o, g = s) : (h = i + m * u, g = a + m * d), t(n, r, h, g);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, u = class {
+	constructor(e, t, n, r) {
+		this.pos = e, this.w = t, this.h = n, this.modulator = r, this.weight = 1;
+	}
+	dist(e) {
+		let [t, n] = e, [r, i] = this.pos, a = Math.max(Math.abs(t - r) - this.w / 2, 0), o = Math.max(Math.abs(n - i) - this.h / 2, 0);
+		return Math.sqrt(a * a + o * o);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, d = class {
+	constructor(e, t, n, r) {
+		this.pos = e, this.w = t, this.h = n, this.modulator = r, this.weight = 1;
+	}
+	dist(e) {
+		let [t, n] = e, [r, i] = this.pos, a = t - r, o = n - i;
+		return Math.sqrt(a * a / (this.w * this.w) + o * o / (this.h * this.h)) * Math.min(this.w, this.h);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, f = class {
+	constructor(t, r, i, a, o) {
+		this.pos = t, this.freq = r, this.angle = Math.abs(i) <= e ? i : n(i), this.cosAngle = Math.cos(this.angle), this.sinAngle = Math.sin(this.angle), this.amplitude = a, this.modulator = o, this.weight = 1;
+	}
+	dist(e) {
+		let [t, n] = e, [r, i] = this.pos, a = t - r, o = n - i, s = a * this.cosAngle + o * this.sinAngle, c = -a * this.sinAngle + o * this.cosAngle, l = Math.sin(s * this.freq) * this.amplitude;
+		return Math.abs(c - l);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, p = class {
+	constructor(e, t, n, r = 100) {
+		this.pos = e, this.turnRate = t, this.modulator = n, this.scale = r, this.weight = 1;
+	}
+	dist(t) {
+		let [n, r] = t, [i, a] = this.pos, o = n - i, s = r - a, c = Math.sqrt(o * o + s * s), l = (Math.atan2(s, o) + Math.PI) / e * this.turnRate * this.scale;
+		return Math.abs(c - l);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, m = class {
+	constructor(e, t, n, r) {
+		this.pos = e, this.waveSpacing = t, this.wobble = n, this.modulator = r, this.weight = 1;
+	}
+	dist(e) {
+		let [t, n] = e, [r, i] = this.pos, a = t - r, o = n - i, s = Math.sqrt(a * a + o * o) / Math.max(this.waveSpacing, 1e-4), c = Math.abs(s % 1 - .5) * 2, l = Math.abs(Math.sin(Math.atan2(o, a) * 3)) * this.wobble;
+		return Math.abs(c + l);
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, h = class {
+	constructor(e, t, n) {
+		this.pos = e, this.axisAngle = t, this.modulator = n, this.weight = 1;
+	}
+	dist(e) {
+		let [t, n] = e, [r, i] = this.pos, a = t - r, o = n - i, s = this.axisAngle, c = Math.cos(s), l = Math.sin(s), u = a * c + o * l, d = -a * l + o * c;
+		return Math.min(Math.abs(d), Math.abs(u));
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, g = class {
+	constructor(e, t, n = 100) {
+		this.seedPoints = e, this.seedRadii = e.map(() => o(.5, 1.5) * n * .1), this.modulator = t, this.scale = n, this.weight = 1;
+	}
+	dist(e) {
+		let n = Infinity;
+		for (let r = 0; r < this.seedPoints.length; r++) {
+			let i = this.seedPoints[r], a = this.seedRadii[r], o = .15 * this.scale * Math.sin(r * 12.9898 + i[0] * .01 + i[1] * .02), s = i[0] + o * .25, c = i[1] + o * .25, l = Math.abs(t(e[0], e[1], s, c) - a);
+			n = Math.min(n, l);
+		}
+		return n;
+	}
+	mod(e, t = !0) {
+		let n = t ? Math.round(this.dist(e)) : this.dist(e);
+		return this.modulator.mod(n);
+	}
+}, _ = class {
+	constructor(e) {
+		this.val = e, this.inverted = !1;
+	}
+	mod(e) {
+		let t = e % this.val / this.val;
+		return this.inverted && (t = 1 - t), t;
+	}
+}, v = class {
+	constructor(e) {
+		this.val = e, this.inverted = !1;
+	}
+	mod(e) {
+		let t = Math.floor(e / this.val), n = e % this.val / this.val;
+		return this.inverted && (n = 1 - n), t % 2 == 0 ? n : 1 - n;
+	}
+}, y = class {
+	constructor(e, t) {
+		this.val = e, this.rate = t, this.inverted = !1;
+	}
+	mod(e) {
+		let t = 1 + e / this.val, n = this.val * (t * this.rate), r = e % n / n;
+		return this.inverted && (r = 1 - r), r;
+	}
+}, b = class {
+	constructor(e) {
+		this.val = e, this.inverted = !1;
+	}
+	mod(e) {
+		let t = Math.floor(e / this.val) % 2;
+		return this.inverted && (t = 1 - t), t;
+	}
+}, x = class {
+	constructor(e, t) {
+		this.stepSize = e, this.numSteps = t || 5, this.inverted = !1;
+	}
+	mod(e) {
+		let t = Math.floor(e / this.stepSize) % this.numSteps / this.numSteps;
+		return this.inverted && (t = 1 - t), t;
+	}
+}, S = class {
+	constructor(e, t = .5) {
+		this.period = e, this.dutyCycle = t, this.inverted = !1;
+	}
+	mod(e) {
+		let t = +(e % this.period / this.period < this.dutyCycle);
+		return this.inverted && (t = 1 - t), t;
+	}
+}, C = class {
+	constructor(e) {
+		this.decayScale = e, this.inverted = !1;
+	}
+	mod(e) {
+		let t = 1 / (1 + e / this.decayScale);
+		return this.inverted && (t = 1 - t), t;
+	}
+};
+//#endregion
+//#region lib/aggregators.js
+function w(e, t) {
+	let n = 0, r = 0;
+	for (let i = 0; i < e.length; i++) n += e[i] * t[i], r += t[i];
+	return n / r;
+}
+function T(e, t) {
+	return e = e.map((e, n) => e * (t[n] ?? 1)), Math.min(...e);
+}
+function E(e, t) {
+	return e = e.map((e, n) => e * (t[n] ?? 1)), Math.max(...e);
+}
+function D(e, t) {
+	let n = o(t.reduce((e, t) => e + t, 0)), r = 0;
+	for (let i = 0; i < e.length; i++) if (r += t[i], r >= n) return e[i];
+	return o(e);
+}
+function O(e, t) {
+	let n = e.map((e, n) => ({
+		val: e,
+		weight: t[n]
+	}));
+	n.sort((e, t) => e.val - t.val);
+	let r = 0, i = t.reduce((e, t) => e + t, 0);
+	for (let e of n) if (r += e.weight, r >= i / 2) return e.val;
+	return n[n.length - 1].val;
+}
+function k(e, t) {
+	let n = 0, r = 0;
+	for (let i = 0; i < e.length; i++) i % 2 == 0 ? n += e[i] * t[i] : r += t[i];
+	return r > 0 ? n / r : Math.min(...e);
+}
+function A(e, t) {
+	let n = w(e, t), r = 0, i = 0;
+	for (let a = 0; a < e.length; a++) r += t[a] * (e[a] - n) ** 2, i += t[a];
+	return Math.sqrt(r / i);
+}
+function j(e, t) {
+	return e.length === 0 ? 0 : (e = e.map((e, n) => e * (t[n] ?? 1)), Math.max(...e) - Math.min(...e));
+}
+//#endregion
+//#region lib/modfield.js
+var M = class {
+	constructor(e, t = w) {
+		this.fields = e, this.aggregator = t, this.minSeen = Infinity, this.maxSeen = -Infinity;
+	}
+	mod(e) {
+		let t = [], n = [];
+		for (let r of this.fields) t.push(r.mod(e)), n.push(r.weight);
+		let r = this.aggregator(t, n);
+		return this.minSeen = Math.min(this.minSeen, r), this.maxSeen = Math.max(this.maxSeen, r), r;
+	}
+	normalize(e) {
+		let t = this.maxSeen - this.minSeen;
+		if (!Number.isFinite(t) || t === 0) return .5;
+		let n = (e - this.minSeen) / t;
+		return Number.isFinite(n) ? n : .5;
+	}
+}, N = class {
+	constructor(e, t, n, r, i) {
+		this.groupA = e, this.groupB = t, this.flipField = n, this.threshold = r, this.aggregator = i;
+	}
+	mod(e) {
+		return this.flipField.mod(e) > this.threshold ? this.groupB.mod(e) : this.groupA.mod(e);
+	}
+	normalize(e, t) {
+		return t ? this.groupB.normalize(e) : this.groupA.normalize(e);
+	}
+}, P = {
+	aggregateWeightedAvg: 1.4,
+	aggregateWeightedMedian: .6,
+	aggregateSpread: .4,
+	aggregateMin: .3,
+	aggregateMax: .3,
+	aggregateWeightedRandom: .2,
+	aggregateAlternating: .25,
+	aggregateWeightedStdDev: .15
+}, F = {
+	constant: 1.2,
+	flippingConstant: .66,
+	falloff: .75,
+	binary: .2,
+	decay: .2,
+	step: .33,
+	squareWave: .25
+}, I = {
+	line: 1,
+	segment: 1,
+	circle: 1,
+	oval: 1,
+	rect: 1,
+	sine: 1,
+	vortex: 1,
+	radial: 1,
+	mirror: 1,
+	cellular: 1
+}, L = {
+	1: "constant",
+	2: "flippingConstant",
+	3: "falloff",
+	4: "binary",
+	5: "decay",
+	6: "step",
+	7: "squareWave"
+}, R = {
+	1: "line",
+	2: "segment",
+	3: "circle",
+	4: "oval",
+	5: "rect",
+	6: "sine",
+	7: "vortex",
+	8: "radial",
+	9: "mirror",
+	10: "cellular"
+}, z = {
+	aggregateWeightedAvg: w,
+	aggregateMin: T,
+	aggregateMax: E,
+	aggregateWeightedRandom: D,
+	aggregateWeightedMedian: O,
+	aggregateAlternating: k,
+	aggregateWeightedStdDev: A,
+	aggregateSpread: j
+}, B = {
+	constant: (e) => new _(e),
+	flippingConstant: (e) => new v(e),
+	falloff: (e, t) => new y(e, t.rate),
+	binary: (e) => new b(e),
+	decay: (e) => new C(e),
+	step: (e, t) => new x(e, t.numSteps),
+	squareWave: (e, t) => new S(e, t.dutyCycle)
+}, V = {
+	line: (e, t) => new c(e, t.slope, t.modulator),
+	segment: (e, t) => new l(e, t.endPosition, t.modulator),
+	circle: (e, t) => new s(e, t.modulator),
+	oval: (e, t) => new d(e, t.width, t.height, t.modulator),
+	rect: (e, t) => new u(e, t.width, t.height, t.modulator),
+	sine: (e, t) => new f(e, t.frequency, t.angle, t.amplitude, t.modulator),
+	vortex: (e, t) => new p(e, t.turnRate, t.modulator, t.scale),
+	radial: (e, t) => new m(e, t.waveSpacing, t.wobble, t.modulator),
+	mirror: (e, t) => new h(e, t.axisAngle, t.modulator),
+	cellular: (e, t) => new g(t.seedPoints, t.modulator, t.scale)
+};
+function H(e, t) {
+	return e == null ? null : t[e] ?? e;
+}
+function U(e, t) {
+	let n = t.map((t) => ({
+		choice: t,
+		weight: e[t] ?? 1
+	})), r = n.reduce((e, t) => e + t.weight, 0);
+	if (r <= 0) return t[0];
+	let i = o() * r;
+	for (let e of n) if (i -= e.weight, i <= 0) return e.choice;
+	return t[t.length - 1];
+}
+function W(e, t) {
+	return e == null ? null : t[e] ?? e;
+}
+function G(e = {}) {
+	let { aggregatorType: t = null, aggregatorTypes: n = Object.keys(P), aggregatorWeights: r = P } = e, i = n.map((e) => W(e, z));
+	return z[W(t, z) ?? U(r, i)] ?? w;
+}
+function K(e, t = .25, n = [[-3, -.5], [1.5, 3]]) {
+	let r = Math.max(e.width, e.height), i = [o(e.width), o(e.height)];
+	if (o() < t) {
+		let e = o(n[0][0], n[0][1]), t = o(n[1][0], n[1][1]);
+		i = [o([e * r, o(1.5, 3) * r]), o([t * r, o(1.5, 3) * r])];
+	}
+	return i;
+}
+function q(e, t) {
+	let n = [];
+	for (let r = 0; r < t; r += 1) n.push([o(e.width), o(e.height)]);
+	return n;
+}
+function J(e = {}) {
+	let { modulatorType: t = null, modulatorTypes: n = Object.keys(F), modulatorWeights: r = F, size: i = 100, modAffect: a = 1, invertChance: s = .5, valueMode: c = "bimodal", smallValueRange: l = [.0025, .0075], largeValueRange: u = [.25, 1.75], valueChance: d = .5, rateRange: f = [.01, .05], numStepsChoices: p = [
+		3,
+		4,
+		5,
+		6
+	], dutyCycleRange: m = [.35, .7] } = e, h = n.map((e) => H(e, L)), g = H(t, L) ?? U(r, h), _ = c === "uniform" ? o(l[0], u[1]) : o() < d ? o(l[0], l[1]) : o(u[0], u[1]), v = Math.round(_ * a * i), y;
+	return y = g === "falloff" ? B.falloff(v, { rate: o(f[0], f[1]) }) : g === "step" ? B.step(v, { numSteps: o(p) }) : g === "squareWave" ? B.squareWave(v, { dutyCycle: o(m[0], m[1]) }) : (B[g] ?? B.constant)(v), y.inverted = o() < s, y;
+}
+function Y(t = {}) {
+	let { fieldType: n = null, fieldTypes: r = Object.keys(I), fieldWeights: i = I, bounds: a = {
+		width: 1e3,
+		height: 1e3
+	}, modulatorOptions: s = {}, modulator: c = null, outsideChance: l = .25, outsideRange: u = [[-3, -.5], [1.5, 3]], weightRange: d = [0, 1], lineSlopeRange: f = [-e, e], widthRange: p = [.1, .25], heightRange: m = [.1, .25], sineFrequencyRange: h = [.0075, .0125], sineAmplitudeRange: g = [.25, .5], vortexTurnRateRange: _ = [.05, 3], radialSpacingRange: v = [.0125, .075], radialWobbleRange: y = [0, .1], cellularSeedCountRange: b = [3, 10], scale: x = Math.min(a.width, a.height) } = t, S = r.map((e) => H(e, R)), C = H(n, R) ?? U(i, S), w = t.position ?? K(a, l, u), T = {
+		modulator: c ?? J({
+			size: x,
+			...s
+		}),
+		scale: x
+	}, E;
+	if (C === "line") E = V.line(w, {
+		...T,
+		slope: o(f[0], f[1])
+	});
+	else if (C === "segment") E = V.segment(w, {
+		...T,
+		endPosition: [o(a.width), o(a.height)]
+	});
+	else if (C === "circle") E = V.circle(w, T);
+	else if (C === "oval" || C === "rect") {
+		let e = o(p[0], p[1]) * x, t = o(m[0], m[1]) * x;
+		E = V[C](w, {
+			...T,
+			width: e,
+			height: t
+		});
+	} else if (C === "sine") E = V.sine(w, {
+		...T,
+		frequency: o(h[0], h[1]),
+		angle: o() * e,
+		amplitude: o(g[0], g[1]) * x
+	});
+	else if (C === "vortex") E = V.vortex(w, {
+		...T,
+		turnRate: o(_[0], _[1])
+	});
+	else if (C === "radial") E = V.radial(w, {
+		...T,
+		waveSpacing: o(v[0], v[1]) * x,
+		wobble: o(y[0], y[1]) * x
+	});
+	else if (C === "mirror") E = V.mirror(w, {
+		...T,
+		axisAngle: o() * e
+	});
+	else if (C === "cellular") {
+		let e = Math.floor(o(b[0], b[1]));
+		E = V.cellular(w, {
+			...T,
+			seedPoints: q(a, e)
+		});
+	} else E = V.circle(w, T);
+	return E.weight = o(d[0], d[1]), E;
+}
+function X(e, t = {}) {
+	let n = [];
+	for (let r = 0; r < e; r += 1) n.push(Y(t));
+	return n;
+}
+function Z(e = 4, t = {}) {
+	let { fields: n = null, aggregator: r = null, ...i } = t;
+	return new M(n ?? X(e, i), r ?? G(i));
+}
+function Q(e = {}) {
+	let { groupAFields: t = null, groupBFields: n = null, groupAFieldCount: r = 4, groupBFieldCount: i = 4, groupAOptions: a = {}, groupBOptions: s = {}, flipField: c = null, flipFieldOptions: l = {}, aggregator: u = null, threshold: d = null, thresholdRange: f = [.25, .75] } = e, p = u ?? G(e);
+	return new N(t ?? Z(r, {
+		...a,
+		aggregator: a.aggregator ?? p
+	}), n ?? Z(i, {
+		...s,
+		aggregator: s.aggregator ?? p
+	}), c ?? Y({
+		...l,
+		modulatorOptions: {
+			modulatorType: "decay",
+			...l.modulatorOptions
+		}
+	}), d ?? o(f[0], f[1]), p);
+}
+//#endregion
+export { b as BinaryModulator, g as CellularField, s as CircleField, _ as ConstantModulator, h as CrossField, P as DEFAULT_AGGREGATOR_WEIGHTS, I as DEFAULT_FIELD_WEIGHTS, F as DEFAULT_MODULATOR_WEIGHTS, C as DecayModulator, y as FalloffModulator, N as FieldFlipGroup, M as FieldGroup, v as FlippingConstantModulator, c as LineField, d as OvalField, m as RadialField, u as RectField, l as SegmentField, f as SineField, S as SquareWaveModulator, x as StepModulator, e as TAU, p as VortexField, k as aggregateAlternating, E as aggregateMax, T as aggregateMin, j as aggregateSpread, w as aggregateWeightedAvg, O as aggregateWeightedMedian, D as aggregateWeightedRandom, A as aggregateWeightedStdDev, a as constrain, r as degrees, t as dist, Y as generateRandomField, Z as generateRandomFieldGroup, X as generateRandomFields, Q as generateRandomFlipFieldGroup, J as generateRandomModulator, i as lerp, n as radians, o as random };

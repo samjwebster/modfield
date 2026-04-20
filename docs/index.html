@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>modfield.js documentation</title>
+    <script>
+        (() => {
+            const saved = localStorage.getItem('modfield-theme');
+            const theme = saved === 'dark' || saved === 'light'
+                ? saved
+                : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.style.colorScheme = theme;
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/shared.css">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <main class="page">
+        <div class="topbar">
+            <h1 class="heading"><a href="/">modfield.js documentation</a></h1>
+            <div class="actions">
+                <a class="link-btn" href="https://github.com/samjwebster/modfield" target="_blank" aria-label="Open GitHub repository">
+                    github <span class="doc-link-arrow" aria-hidden="true">&uarr;</span>
+                </a>
+                <a class="link-btn" href="/showcases" aria-label="Open showcases">
+                    showcases <span class="doc-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="link-btn" href="/" aria-label="Open demo">
+                    demo <span class="doc-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <button type="button" id="regen-colors" aria-label="Regenerate colors">
+                    <span class="doc-link-arrow" aria-hidden="true">&#8635;</span> new colors</button>
+                <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+            </div>
+        </div>
+
+        <div class="docs-shell">
+            <aside class="sidebar">
+                <div class="sidebar-card">
+                    <p class="sidebar-kicker">sections</p>
+                    <div class="sidebar-nav" aria-label="Documentation sections">
+                        <button class="nav-btn" data-section="introduction" aria-selected="true">
+                            <span class="nav-title">introduction</span>
+                            <span class="nav-subtitle">about modfield.js</span>
+                        </button>
+                        <button class="nav-btn" data-section="fields-modulators" aria-selected="false">
+                            <span class="nav-title">fields + modulators</span>
+                            <span class="nav-subtitle">single-field visualization and controls</span>
+                        </button>
+                        <button class="nav-btn" data-section="groups-aggregators" aria-selected="false">
+                            <span class="nav-title">groups + aggregators</span>
+                            <span class="nav-subtitle">aggregator behavior and flipfield groups</span>
+                        </button>
+                        <button class="nav-btn" data-section="random-generation" aria-selected="false">
+                            <span class="nav-title">random generation</span>
+                            <span class="nav-subtitle">fields, groups, and modulators</span>
+                        </button>
+                        <button class="nav-btn" data-section="utilities" aria-selected="false">
+                            <span class="nav-title">utilities</span>
+                            <span class="nav-subtitle">helpers and math</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="content">
+                <article class="doc-section active" id="section-introduction" data-section="introduction">
+                <p class="kicker">overview</p>
+
+                <h2 class="section-title">What is modfield.js?</h2>
+                <p class="lead">modfield.js is a small, expressive library for creating two-dimensional patterns with local spatial similarity. It combines distance fields, modulo operations, and grouping strategies to produce a wide variety of interesting outputs for creative coding applications.
+                </p>
+
+                <h2 class="section-title">As an alternative to noise</h2>
+                <p class="lead">
+                    I created modfield.js as an alternative to noise-based composition in my generative art (read below). While it sometimes lacks the smooth consistency of noise at any position in space, it offers unique compositional possibilities, especially over a limited space like a canvas. I've attempted to make it as easy as possible to use modfield.js as a drop-in replacement for 2D noise in creative coding projects; anywhere you'd sample noise in two dimensions, you can instead sample a modfield group.
+                </p>
+
+                <h2 class="section-title">Background</h2>
+                <p class="lead">
+                    I, <a href="https://www.linkedin.com/in/samjwebster/" target="_blank">Sam Webster</a>, created modfield.js as a tool for my generative art, which I produce under the artist alias <a href="https://instagram.com/tntwntythr" target="_blank">ten twentythree</a>. I felt limited by my reliance on noise for random spatial variation and wanted a way to create unique patterns with local similarity. Though I'm sure I'm not the first person to do this, I independently stumbled upon the idea of using modulo operations on distance fields during Genuary 2025. I applied some variations on this technique in my day <a href="https://x.com/tntwntythr/status/1879323043090292983" target="_blank">14</a>, <a href="https://x.com/tntwntythr/status/1879695060230644076" target="_blank">15</a>, <a href="https://x.com/tntwntythr/status/1880985647680504060" target="_blank">19</a>, <a href="https://x.com/tntwntythr/status/1884071529937527182" target="_blank">27</a>, and <a href="https://x.com/tntwntythr/status/1884784672367837575" target="_blank">29</a> projects. Safe to say I was enjoying using it!
+                    <br><br>
+                    In early 2026, I was reminded of this technique and wanted to create something more fleshed out than the quick versions used in the Genuary sketches. The modfield.js library was created using code from a generative art project I am currently working on. I added more distance functions, strategies for modulating distance values, and field grouping to create a useful, versatile creative coding library.
+                </p>
+
+                <h2 class="section-title">Acknowledgments</h2>
+                <p class="lead">
+                    This library was created with reference to Andrew Walpole's <a href="https://andrewwalpole.com/blog/use-vite-for-javascript-libraries/" target="_blank">guide to building JavaScript libraries with Vite</a>.
+                    <br>
+                    The demo and documentation visualizations use the <a href="https://github.com/meodai/rampensau" target="_blank">Rampensau library</a> for nice color generation.
+                </p>
+
+
+                <!-- <div class="grid-2">
+                    <div class="card">
+                        <h3>What You Can Build</h3>
+                        <ul>
+                            <li>Distance-driven gradients and banding systems</li>
+                            <li>Layered field interactions with custom aggregator behavior</li>
+                            <li>Generative textures with deterministic or randomized controls</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>How To Use This Page</h3>
+                        <ul>
+                            <li><strong>Fields + modulators:</strong> explore one field at a time.</li>
+                            <li><strong>Groups + aggregators:</strong> see how combinations resolve.</li>
+                            <li><strong>Utilities:</strong> quick reference for helpers and math exports.</li>
+                        </ul>
+                    </div>
+                </div> -->
+                </article>
+
+                <article class="doc-section" id="section-fields-modulators" data-section="fields-modulators">
+                    <p class="kicker">experimenting with single fields</p>
+                    <h2 class="section-title">Fields And Modulators</h2>
+                    <p class="lead">Pick one field and one modulator to inspect how distance and modulation combine before grouping.</p>
+
+                    <div class="split-layout">
+                        <div class="section-stack">
+                            <div class="card">
+                                <div class="control">
+                                    <label for="field-select">field type</label>
+                                    <select id="field-select"></select>
+                                </div>
+                                <p class="section-note" id="field-description"></p>
+                            </div>
+
+                            <div class="card">
+                                <div class="control">
+                                    <label for="modulator-select">modulator type</label>
+                                    <select id="modulator-select"></select>
+                                </div>
+                                <div class="control">
+                                    <label for="modulator-value-slider">modulator scale</label>
+                                    <input
+                                        type="range"
+                                        id="modulator-value-slider"
+                                        min="0.01"
+                                        max="0.50"
+                                        step="0.01"
+                                        value="0.10"
+                                    >
+                                    <p class="range-readout" id="modulator-value-readout">0.10%</p>
+                                </div>
+                                <p class="section-note" id="modulator-description"></p>
+                            </div>
+                        </div>
+
+                        <div class="viz-card">
+                            <h3>Single Field Visualization</h3>
+                            <div class="viz-wrap">
+                                <canvas id="fields-canvas" width="960" height="430" aria-label="Single field visualization"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="doc-section" id="section-groups-aggregators" data-section="groups-aggregators">
+                    <p class="kicker">experimenting with groups</p>
+                    <h2 class="section-title">Field Groups And Aggregators</h2>
+                    <p class="lead">This section focuses on how multiple fields are merged using aggregators. Change aggregator type and randomize the field group to see the effects.</p>
+
+                    <div class="split-layout">
+                        <div class="section-stack">
+                            <div class="card">
+                                <div class="control">
+                                    <label for="aggregator-select">aggregator</label>
+                                    <select id="aggregator-select"></select>
+                                </div>
+                                <p class="section-note" id="aggregator-description"></p>
+                                
+                                <div style="padding-top: 1em;"></div>
+                                <div class="button-row">
+                                    <button type="button" id="randomize-group">randomize field group</button>
+                                    <button type="button" id="randomize-group-weights">randomize field weights</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="viz-stack">
+                            <div class="viz-card">
+                                <h3>Normal Field Group</h3>
+                                <div class="viz-wrap">
+                                    <canvas id="groups-canvas" width="960" height="330" aria-label="Field group visualization"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <hr> -->
+
+                    <h2 class="section-title">FlipField Groups</h2>
+                    <p class="lead">FlipField Groups switch between two different FieldGroups according to the distance from a single 'flip field'. These fields can be quite chaotic!</p>
+
+                    <div class="split-layout">
+                        <div class="section-stack">
+                            <div class="card">
+                                <h3>Flipfield Group Details</h3>
+                                <p id="flipgroup-description"></p>
+
+                                <div class="control">
+                                    <label for="flip-threshold-slider">flip threshold</label>
+                                    <input
+                                        type="range"
+                                        id="flip-threshold-slider"
+                                        min="0"
+                                        max="1"
+                                        step="0.01"
+                                        value="0.50"
+                                    >
+                                    <p class="range-readout" id="flip-threshold-readout">0.50</p>
+                                </div>
+
+                                <div style="padding-top: 1em;"></div>
+                                <div class="button-row">
+                                    <button type="button" id="randomize-flipgroup">randomize flipfield group</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="viz-stack">
+                            <div class="viz-card">
+                                <h3>Flipfield Group</h3>
+                                <div class="viz-wrap">
+                                    <canvas id="flipgroup-canvas" width="960" height="330" aria-label="Flipfield group visualization"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <article class="doc-section" id="section-random-generation" data-section="random-generation">
+                    <p class="kicker">generation reference</p>
+                    <h2 class="section-title">Random Generation</h2>
+                    <p class="lead">
+                        modfield.js offers multiple helpers for generating random fields and groups in a single function call. These functions can be used for quick experimentation as well as for finely-configured random generation in your projects.
+                    </p>
+                    <div id="random-generation-reference" class="reference-grid"></div>
+                </article>
+
+                <article class="doc-section" id="section-utilities" data-section="utilities">
+                    <p class="kicker">exported helpers</p>
+                    <h2 class="section-title">Utilities</h2>
+                    <p class="lead">These are the utility exports available from the library entry point. They are the low-level helpers you can use when building custom generators, transforms, or distance math of your own.</p>
+                    <div id="utilities-reference" class="utility-grid"></div>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <script src="../dist/modfield.umd.js"></script>
+    <script type="module" src="./index.js"></script>
+</body>
+</html>

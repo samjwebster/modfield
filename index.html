@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>modfield - FieldGroup Demo</title>
+    <script>
+        (() => {
+            const saved = localStorage.getItem('modfield-theme');
+            const theme = saved === 'dark' || saved === 'light'
+                ? saved
+                : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.style.colorScheme = theme;
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/shared.css">
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <main class="page">
+        <div class="topbar">
+            <h1 class="heading"><a href="/" style="text-decoration: none; color: inherit;">modfield.js</a></h1>
+            <div class="actions">
+                <a class="doc-link" href="https://github.com/samjwebster/modfield" target="_blank" aria-label="Open GitHub repository">
+                    github <span class="doc-link-arrow" aria-hidden="true">&uarr;</span>
+                </a>
+                <a class="doc-link" href="/showcases" aria-label="Open showcases">
+                    showcases <span class="doc-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="doc-link" href="/docs" aria-label="Open documentation">
+                    documentation <span class="doc-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <button type="button" id="theme-toggle" aria-label="Toggle theme"></button>
+            </div>
+        </div>
+
+        <div class="workspace" id="workspace">
+            <section class="panel display-panel" id="display-panel">
+                <div class="display-area" id="display-area">
+                    <div class="viz-frame">
+                        <div id="canvas-container"></div>
+                    </div>
+                </div>
+
+                <div class="bottom">
+                    <button type="button" class="regen" id="regen-btn">regenerate</button>
+                    <span class="countdown" id="countdown">regenerating in 10s</span>
+                    <button type="button" class="config-toggle" id="config-toggle">settings</button>
+                </div>
+            </section>
+
+            <section class="panel config-panel" id="config-panel">
+                <div class="config-section">
+                    <label class="config-label">
+                        cell size
+                        <span class="config-label-value" id="cell-size-value">3.5%</span>
+                    </label>
+                    <input type="range" id="cell-size" min="0.01" max="0.1" step="0.001" value="0.035">
+                </div>
+
+                <div class="config-section">
+                    <label class="config-label" for="shape-mode">cell shape</label>
+                    <select class="config-select" id="shape-mode">
+                        <option value="circle">circle</option>
+                        <option value="rounded-rect" selected>rounded rect</option>
+                        <option value="rect">rect</option>
+                        <option value="diamond">diamond</option>
+                        <option value="triangle">triangle</option>
+                    </select>
+                </div>
+
+                <div class="config-section">
+                    <label class="config-label">
+                        shape padding
+                        <span class="config-label-value" id="shape-padding-value">10%</span>
+                    </label>
+                    <input type="range" id="shape-padding" min="0" max="0.24" step="0.01" value="0.10">
+                </div>
+
+                <div class="config-section">
+                    <!-- <label class="config-label">color interpolation</label> -->
+                    <div class="config-option">
+                        <input type="checkbox" id="color-mixing" checked>
+                        <label for="color-mixing">enable color mixing</label>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <label class="config-label">
+                        mod affect
+                        <span class="config-label-value" id="mod-affect-value">1.0x</span>
+                    </label>
+                    <input type="range" id="mod-affect" min="0.1" max="3.0" step="0.1" value="1.0">
+                    <div class="config-help">rescales modulator control values</div>
+                </div>
+
+                <div class="config-section">
+                    <label class="config-label">field count range</label>
+                    <div class="config-range-grid">
+                        <div>
+                            <label for="field-count-min">min</label>
+                            <input type="number" id="field-count-min" min="1" max="16" step="1" value="3">
+                        </div>
+                        <div>
+                            <label for="field-count-max">max</label>
+                            <input type="number" id="field-count-max" min="1" max="16" step="1" value="6">
+                        </div>
+                    </div>
+                    <div class="config-help">0 < min <= max <= 16</div>
+                </div>
+
+                <div class="config-section config-actions">
+                    <button type="button" class="reset-settings" id="reset-settings">reset settings</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="./dist/modfield.umd.js"></script>
+    <script type="module" src="./index.js"></script>
+</body>
+</html>

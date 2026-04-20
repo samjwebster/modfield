@@ -1,0 +1,133 @@
+.page {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: grid;
+    gap: 22px;
+}
+
+.heading {
+    font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+}
+
+.link-btn {
+    border: 1px solid var(--accent-soft);
+    background: var(--bg-elev);
+    color: var(--text);
+    border-radius: 999px;
+    font: 600 0.9rem "Manrope", sans-serif;
+    padding: 10px 16px;
+    cursor: pointer;
+    text-decoration: none;
+    backdrop-filter: blur(8px);
+    transition: transform 130ms ease, border-color 130ms ease, background-color 130ms ease;
+}
+
+.link-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+}
+
+.link-btn:active {
+    transform: translateY(0);
+}
+
+.link-arrow {
+    margin-left: 4px;
+    font-weight: 700;
+}
+
+.card {
+    border: 1px solid var(--accent-soft);
+    border-radius: 18px;
+    padding: 16px;
+    background: color-mix(in srgb, var(--bg-elev) 92%, transparent);
+    box-shadow: var(--card-shadow);
+}
+
+.kicker {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+}
+
+.section-title {
+    margin: 6px 0 8px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+}
+
+.lead {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.showcase-card {
+    display: grid;
+    gap: 10px;
+}
+
+.showcase-type {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+}
+
+.showcase-title {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.showcase-author {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.showcase-description {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+    font-size: 0.93rem;
+}
+
+.showcase-link {
+    justify-self: start;
+    margin-top: 4px;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.92rem;
+}
+
+.showcase-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+    body {
+        padding: 16px;
+    }
+
+    .topbar {
+        flex-wrap: wrap;
+    }
+
+    .actions {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+}
