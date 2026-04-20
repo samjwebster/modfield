@@ -1,10 +1,10 @@
-![Example field created with modfield.js](./readme_banner.png)
-
 # modfield.js
 
 A standalone JavaScript library for creative coding that combines **distance fields**, **modulators**, and **aggregators** to produce interesting, locally similar patterns. Originally developed for p5.js artworks, it now works as a pure JavaScript library.
 
 Explore the library features on [GitHub pages](https://samjwebster.github.io/modfield/).
+
+![Example field created with modfield.js](./readme_banner.png)
 
 ## Core Concepts
 
