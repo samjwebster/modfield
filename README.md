@@ -31,6 +31,10 @@ The library applies these techniques in easy-to-implement ways, including:
 npm install modfield
 ```
 
+Or directly use the `dist/` files:
+- `dist/modfield.es.js` - ES module build
+- `dist/modfield.umd.js` - UMD build
+
 ## Usage
 
 ### Basic Example
