@@ -225,7 +225,7 @@ The library exports utility helpers for common workflow patterns:
 
 ## License
 
-ISC
+MIT License (see `LICENSE`)
 
 ## Acknowledgements
 
