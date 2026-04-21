@@ -88,28 +88,22 @@ class Composition {
 
         ptsToDo = shuffleArray(ptsToDo);
 
-        let fg = ModField.generateRandomFieldGroup(
-            floor(random(4, 8)),
-            {
-                bounds: {
-                    width: width,
-                    height: height
-                },
-                aggregatorType: 'aggregateWeightedAvg',
-                modulatorOptions: {
-                    size: min(width, height),
-                    valueChance: -1,
-                }
-            }
-        );
+        let fg = modfield.generateRandomFieldGroup({
+            w: width, h: height,
+        });
+
+        let fg2 = modfield.generateRandomFieldGroup({
+            w: width, h: height,
+        });
 
         // warm the field group for normalization
         let numWarm = 1000;
         for(let i = 0; i < numWarm; i++) {
             fg.mod([random(width), random(height)]);
+            fg2.mod([random(width), random(height)]);
         }
 
-        let chunk_interval = 0.40;
+        let chunk_interval = 0.33;
 
         for(let ix = 0; ix < ptsToDo.length; ix++) {
             let pt = ptsToDo[ix];
@@ -122,8 +116,6 @@ class Composition {
             let n = fg.mod([x, y]);
             n = fg.normalize(n);
 
-            let a = aOff + (n * TAU) + PI;
-
             // let nModulatorCheck = (n*100);
             // nModulatorCheck = lerp(0, 50, n);
             // let modResult = round(nModulatorCheck) % modulator;
@@ -133,10 +125,14 @@ class Composition {
             // if(modResult <= 1) continue;
 
             let chunk_rem = n % chunk_interval;
-            if(chunk_rem > chunk_interval * 0.20) continue;
+            if(chunk_rem > chunk_interval * 0.33) continue;
 
             // if(a < modulatorOffset) lerp(a, modulatorOffset, modT);
             // else if(a > modulatorOffset) lerp(a, modulatorOffset+PI, modT);
+
+            let n2 = fg2.mod([x, y]);
+            n2 = fg2.normalize(n2);
+            let a = n2 * TAU + aOff;
             
             let r = lerp(rRange[0], rRange[1], random());
             let rOffAmt = r/16;

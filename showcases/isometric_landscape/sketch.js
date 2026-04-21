@@ -55,24 +55,15 @@ class Composition {
 
         this.heightScale = random(0.05, 0.30) * min(width, height);
 
-        this.heightGroup = modfield.generateRandomFieldGroup(7, {
-            bounds: { width: width, height: height },
-            outsideChance: 0.20,
-            modulatorOptions: {
-                size: min(width, height),
-                // modAffect: 0.35,
-            },
-            aggregatorType: 'aggregateWeightedAvg',
+        this.heightGroup = modfield.generateRandomFieldGroup({
+            w: width, h: height,
         });
 
-        this.colorGroup = modfield.generateRandomFieldGroup(6, {
-            bounds: { width: width, height: height },
-            outsideChance: 0.20,
+        this.colorGroup = modfield.generateRandomFieldGroup({
+            w: width, h: height,
             modulatorOptions: {
-                size: min(width, height),
-                // modAffect: 0.35,
-            },
-            aggregatorType: 'aggregateWeightedAvg',
+                modAffect: 0.1,
+            }
         });
 
         warmFieldGroup(this.heightGroup, width, height, 30, 30);
