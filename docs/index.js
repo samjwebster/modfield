@@ -90,73 +90,77 @@ const RANDOM_GENERATION_SECTIONS = [
         sectionTitle: 'Field Groups',
         functionName: 'generateRandomFieldGroup',
         description: 'Generates a random FieldGroup with multiple fields combined via an aggregator.',
-        defaultExample: `const group = generateRandomFieldGroup();`,
-        configuredExample: `const group = generateRandomFieldGroup(6, {
-  fieldTypes: ['circle', 'oval', 'sine'],
-  aggregatorType: 'aggregateWeightedMedian'
+        defaultExample: `const group = generateRandomFieldGroup({ w: 1000, h: 600 });`,
+        configuredExample: `const group = generateRandomFieldGroup({
+  w: 1000,
+  h: 600,
+  fieldCountRange: [4, 8],
+  aggregatorOptions: {
+    aggregatorTypes: ['aggregateWeightedMedian']
+  },
+  fieldOptions: {
+    fieldTypes: ['circle', 'oval', 'sine']
+  }
 });`,
         options: [
-            { name: 'fieldCount', type: 'number', description: 'Number of fields to generate (default: 4).' },
-            { name: 'fields', type: 'array', description: 'Supply pre-built fields instead of generating them.' },
-            { name: 'aggregator', type: 'function', description: 'Supply an explicit aggregator function.' },
-            { name: 'aggregatorType', type: 'string', description: 'Force a specific aggregator type.' },
-            { name: 'aggregatorTypes', type: 'array', description: 'Pool of eligible aggregator types.' },
-            { name: 'aggregatorWeights', type: 'object', description: 'Weighted selection map for aggregators.' },
-            { name: 'fieldTypes', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'fieldWeights', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'bounds', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'position', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'modulatorOptions', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'modulator', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'weightRange', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
-            { name: 'lineSlopeRange', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
+            { name: 'w', type: 'number', description: 'Required canvas width.' },
+            { name: 'h', type: 'number', description: 'Required canvas height.' },
+            { name: 'fieldCountRange', type: 'array', description: 'Range [min, max] used to choose field count.' },
+            { name: 'aggregatorOptions', type: 'object', description: 'Nested aggregator options (aggregatorTypes, aggregatorWeights).' },
+            { name: 'fieldOptions', type: 'object', description: 'Nested field options - see generateRandomField.' },
+            { name: 'modulatorOptions', type: 'object', description: 'Nested modulator options - see generateRandomModulator.' },
         ],
     },
     {
         sectionTitle: 'Flipfield Groups',
         functionName: 'generateRandomFlipFieldGroup',
         description: 'Generates a FieldFlipGroup with two independent field groups switched by a routing field.',
-        defaultExample: `const flipGroup = generateRandomFlipFieldGroup();`,
+        defaultExample: `const flipGroup = generateRandomFlipFieldGroup({ w: 1000, h: 600 });`,
         configuredExample: `const flipGroup = generateRandomFlipFieldGroup({
-  groupAFieldCount: 4,
-  groupBFieldCount: 5,
-  thresholdRange: [0.3, 0.7]
+  w: 1000,
+  h: 600,
+  groupAFieldCountRange: [3, 6],
+  groupBFieldCountRange: [5, 9],
+  flipFieldThresholdRange: [0.3, 0.7],
+  groupAAggregatorOptions: {
+    aggregatorTypes: ['aggregateWeightedAvg', 'aggregateSpread']
+  }
 });`,
         options: [
-            { name: 'groupAFields', type: 'array', description: 'Supply pre-built fields for the A branch.' },
-            { name: 'groupBFields', type: 'array', description: 'Supply pre-built fields for the B branch.' },
-            { name: 'groupAFieldCount', type: 'number', description: 'Field count for the A branch (default: 4).' },
-            { name: 'groupBFieldCount', type: 'number', description: 'Field count for the B branch (default: 4).' },
-            { name: 'groupAOptions', type: 'nested', description: 'Nested Field Options for branch A - see generateRandomField.' },
-            { name: 'groupBOptions', type: 'nested', description: 'Nested Field Options for branch B - see generateRandomField.' },
-            { name: 'flipField', type: 'object', description: 'Supply the flip field directly instead of generating one.' },
-            { name: 'flipFieldOptions', type: 'nested', description: 'Nested Field Options for the flip field - see generateRandomField.' },
-            { name: 'aggregator', type: 'function', description: 'Supply an explicit aggregator function for both branches.' },
-            { name: 'aggregatorType', type: 'string', description: 'Force a specific aggregator type.' },
-            { name: 'aggregatorTypes', type: 'array', description: 'Pool of eligible aggregator types.' },
-            { name: 'aggregatorWeights', type: 'object', description: 'Weighted selection map for aggregators.' },
-            { name: 'threshold', type: 'number', description: 'Explicit switch threshold (0–1).' },
-            { name: 'thresholdRange', type: 'array', description: 'Range [min, max] to choose a random threshold (default: [0.25, 0.75]).' },
+            { name: 'w', type: 'number', description: 'Required canvas width.' },
+            { name: 'h', type: 'number', description: 'Required canvas height.' },
+            { name: 'groupAFieldCountRange', type: 'array', description: 'Range [min, max] used to choose branch A field count.' },
+            { name: 'groupAFieldOptions', type: 'object', description: 'Nested field options for branch A.' },
+            { name: 'groupAModulatorOptions', type: 'object', description: 'Nested modulator options for branch A.' },
+            { name: 'groupAAggregatorOptions', type: 'object', description: 'Nested aggregator options for branch A.' },
+            { name: 'groupBFieldCountRange', type: 'array', description: 'Range [min, max] used to choose branch B field count.' },
+            { name: 'groupBFieldOptions', type: 'object', description: 'Nested field options for branch B.' },
+            { name: 'groupBModulatorOptions', type: 'object', description: 'Nested modulator options for branch B.' },
+            { name: 'groupBAggregatorOptions', type: 'object', description: 'Nested aggregator options for branch B.' },
+            { name: 'flipFieldOptions', type: 'object', description: 'Nested field options for the flip field.' },
+            { name: 'flipFieldModulatorOptions', type: 'object', description: 'Nested modulator options for the flip field.' },
+            { name: 'flipFieldThresholdRange', type: 'array', description: 'Range [min, max] to choose the flip threshold.' },
         ],
     },
     {
         sectionTitle: 'Individual Fields',
         functionName: 'generateRandomField',
         description: 'Generates a single configured field with distance function, geometry, and modulator.',
-        defaultExample: `const field = generateRandomField();`,
+        defaultExample: `const field = generateRandomField({ bounds: { width: 1000, height: 600 } }, { scale: 600 });`,
         configuredExample: `const field = generateRandomField({
   bounds: { width: 1000, height: 600 },
-    fieldWeights: { circle: 2, radial: 0.5 }
+  fieldWeights: { circle: 2, radial: 0.5 }
+}, {
+  scale: 600,
+  modulatorTypes: ['decay', 'falloff']
 });`,
         options: [
-            { name: 'fieldType', type: 'string', description: 'Force a specific field type.' },
             { name: 'fieldTypes', type: 'array', description: 'Pool of eligible field types.' },
             { name: 'fieldWeights', type: 'object', description: 'Weighted selection map for field types.' },
-            { name: 'bounds', type: 'object', description: 'Canvas bounds {width, height} for placement.' },
-            { name: 'position', type: 'array', description: 'Override generated position [x, y].' },
+            { name: 'bounds', type: 'object', description: 'Required canvas bounds {width, height} for placement.' },
+            { name: 'scale', type: 'number', description: 'Optional field scale (defaults to min(bounds.width, bounds.height)).' },
             { name: 'outsideChance', type: 'number', description: 'Probability (0–1) of placing field outside bounds.' },
             { name: 'outsideRange', type: 'array', description: 'Ranges for outside placement scaling.' },
-            { name: 'scale', type: 'number', description: 'Shared scale for geometry and modulators.' },
             { name: 'weightRange', type: 'array', description: 'Range [min, max] for field weight.' },
             { name: 'lineSlopeRange', type: 'array', description: 'Range [min, max] for LineField slope.' },
             { name: 'widthRange', type: 'array', description: 'Range [min, max] for rect/oval width scale.' },
@@ -164,50 +168,51 @@ const RANDOM_GENERATION_SECTIONS = [
             { name: 'sineFrequencyRange', type: 'array', description: 'Range [min, max] for SineField frequency.' },
             { name: 'sineAmplitudeRange', type: 'array', description: 'Range [min, max] for SineField amplitude scale.' },
             { name: 'vortexTurnRateRange', type: 'array', description: 'Range [min, max] for VortexField turn rate.' },
-            { name: 'rippleSpacingRange', type: 'array', description: 'Range [min, max] for RadialField spacing scale.' },
-            { name: 'rippleWobbleRange', type: 'array', description: 'Range [min, max] for RadialField wobble scale.' },
+            { name: 'radialSpacingRange', type: 'array', description: 'Range [min, max] for RadialField spacing scale.' },
+            { name: 'radialWobbleRange', type: 'array', description: 'Range [min, max] for RadialField wobble scale.' },
             { name: 'cellularSeedCountRange', type: 'array', description: 'Range [min, max] for CellularField seed count.' },
-            { name: 'modulator', type: 'object', description: 'Supply a modulator directly instead of generating one.' },
-            { name: 'modulatorOptions', type: 'nested', description: 'Nested Modulator Options - see generateRandomModulator.' },
+            { name: '[second argument] modulatorOptions', type: 'object', description: 'Nested modulator options passed as the second argument - see generateRandomModulator.' },
         ],
     },
     {
         sectionTitle: 'Multiple Fields',
         functionName: 'generateRandomFields',
         description: 'Generates multiple individual fields using the same generation options.',
-        defaultExample: `const fields = generateRandomFields(4);`,
+        defaultExample: `const fields = generateRandomFields(4, { bounds: { width: 1000, height: 600 } }, { scale: 600 });`,
         configuredExample: `const fields = generateRandomFields(6, {
-    fieldWeights: { circle: 2, radial: 0.5 }
+  bounds: { width: 1000, height: 600 },
+  fieldWeights: { circle: 2, radial: 0.5 }
+}, {
+  scale: 600,
+  modulatorTypes: ['decay']
 });`,
         options: [
             { name: 'count', type: 'number', description: 'How many fields to generate.' },
-            { name: '[all field options]', type: 'nested', description: 'Nested Field Options - see generateRandomField.' },
+            { name: '[second argument] fieldOptions', type: 'object', description: 'Nested field options - see generateRandomField.' },
+            { name: '[third argument] modulatorOptions', type: 'object', description: 'Nested modulator options - see generateRandomModulator.' },
         ],
     },
     {
         sectionTitle: 'Modulators',
         functionName: 'generateRandomModulator',
         description: 'Generates a single modulator with a distance pattern and optional inversion.',
-        defaultExample: `const modulator = generateRandomModulator();`,
+        defaultExample: `const modulator = generateRandomModulator({ scale: 600 });`,
         configuredExample: `const modulator = generateRandomModulator({
-  modulatorType: 'decay',
-  size: 100,
+  modulatorTypes: ['decay'],
+  scale: 600,
+  modRange: [0.02, 0.5],
   invertChance: 0.5
 });`,
         options: [
-            { name: 'modulatorType', type: 'string', description: 'Force a specific modulator type.' },
             { name: 'modulatorTypes', type: 'array', description: 'Pool of eligible modulator types.' },
             { name: 'modulatorWeights', type: 'object', description: 'Weighted selection map for modulator types.' },
-            { name: 'size', type: 'number', description: 'Scale factor for modulator parameters (default: 100).' },
-            { name: 'modAffect', type: 'number', description: 'Multiplier for size (default: 1.0).' },
+            { name: 'scale', type: 'number', description: 'Required distance scale used to size modulator behavior.' },
+            { name: 'modRange', type: 'array', description: 'Range [min, max] for initial modulation factor before scaling.' },
+            { name: 'modAffect', type: 'number', description: 'Multiplier applied after scaling (default: 1.0).' },
             { name: 'invertChance', type: 'number', description: 'Probability (0–1) of inverting the modulator (default: 0.5).' },
-            { name: 'valueMode', type: 'string', description: 'Value selection: "uniform" or "bimodal" (default: "bimodal").' },
-            { name: 'smallValueRange', type: 'array', description: 'Range [min, max] for bimodal small values.' },
-            { name: 'largeValueRange', type: 'array', description: 'Range [min, max] for bimodal large values.' },
-            { name: 'valueChance', type: 'number', description: 'Probability (0–1) of picking small value in bimodal mode.' },
-            { name: 'rateRange', type: 'array', description: 'Range [min, max] for FalloffModulator rate.' },
-            { name: 'numStepsChoices', type: 'array', description: 'Allowed step counts for StepModulator.' },
-            { name: 'dutyCycleRange', type: 'array', description: 'Range [min, max] for SquareWaveModulator duty cycle.' },
+            { name: 'falloffRateRange', type: 'array', description: 'Range [min, max] for FalloffModulator rate.' },
+            { name: 'stepNumStepsRange', type: 'array', description: 'Range [min, max] for StepModulator step count.' },
+            { name: 'squarePeakSize', type: 'array', description: 'Range [min, max] for SquareWaveModulator duty cycle.' },
         ],
     },
 ];
@@ -480,21 +485,21 @@ function makeModulator(type, scale, valueMultiplier = MODULATOR_VALUE_DEFAULT_PE
 
     switch (type) {
         case 'ConstantModulator':
-            return new ModField.ConstantModulator(modValue);
+            return new modfield.ConstantModulator(modValue);
         case 'FlippingConstantModulator':
-            return new ModField.FlippingConstantModulator(modValue);
+            return new modfield.FlippingConstantModulator(modValue);
         case 'FalloffModulator':
-            return new ModField.FalloffModulator(modValue, 0.03);
+            return new modfield.FalloffModulator(modValue, 0.03);
         case 'BinaryModulator':
-            return new ModField.BinaryModulator(modValue);
+            return new modfield.BinaryModulator(modValue);
         case 'DecayModulator':
-            return new ModField.DecayModulator(modValue);
+            return new modfield.DecayModulator(modValue);
         case 'StepModulator':
-            return new ModField.StepModulator(modValue, 5);
+            return new modfield.StepModulator(modValue, 5);
         case 'SquareWaveModulator':
-            return new ModField.SquareWaveModulator(modValue, 0.35);
+            return new modfield.SquareWaveModulator(modValue, 0.35);
         default:
-            return new ModField.ConstantModulator(modValue);
+            return new modfield.ConstantModulator(modValue);
     }
 }
 
@@ -505,23 +510,23 @@ function makeField(type, modulator, width, height) {
 
     switch (type) {
         case 'CircleField':
-            return new ModField.CircleField([cx, cy], modulator);
+            return new modfield.CircleField([cx, cy], modulator);
         case 'LineField':
-            return new ModField.LineField([cx, cy], 0.15, modulator);
+            return new modfield.LineField([cx, cy], 0.15, modulator);
         case 'SegmentField':
-            return new ModField.SegmentField([width * 0.2, height * 0.7], [width * 0.8, height * 0.3], modulator);
+            return new modfield.SegmentField([width * 0.2, height * 0.7], [width * 0.8, height * 0.3], modulator);
         case 'RectField':
-            return new ModField.RectField([cx, cy], scale * 0.45, scale * 0.24, modulator);
+            return new modfield.RectField([cx, cy], scale * 0.45, scale * 0.24, modulator);
         case 'OvalField':
-            return new ModField.OvalField([cx, cy], scale * 0.34, scale * 0.22, modulator);
+            return new modfield.OvalField([cx, cy], scale * 0.34, scale * 0.22, modulator);
         case 'SineField':
-            return new ModField.SineField([width * 0.15, cy], 0.03, Math.PI * 0.16, scale * 0.1, modulator);
+            return new modfield.SineField([width * 0.15, cy], 0.03, Math.PI * 0.16, scale * 0.1, modulator);
         case 'VortexField':
-            return new ModField.VortexField([cx, cy], 1.3, modulator, scale);
+            return new modfield.VortexField([cx, cy], 1.3, modulator, scale);
         case 'RadialField':
-            return new ModField.RadialField([cx, cy], scale * 0.08, scale * 0.03, modulator);
+            return new modfield.RadialField([cx, cy], scale * 0.08, scale * 0.03, modulator);
         case 'CrossField':
-            return new ModField.CrossField([cx, cy], Math.PI * 0.17, modulator);
+            return new modfield.CrossField([cx, cy], Math.PI * 0.17, modulator);
         case 'CellularField': {
             const seeds = [
                 [width * 0.22, height * 0.28],
@@ -529,10 +534,10 @@ function makeField(type, modulator, width, height) {
                 [width * 0.48, height * 0.66],
                 [width * 0.23, height * 0.74],
             ];
-            return new ModField.CellularField(seeds, modulator, scale);
+            return new modfield.CellularField(seeds, modulator, scale);
         }
         default:
-            return new ModField.CircleField([cx, cy], modulator);
+            return new modfield.CircleField([cx, cy], modulator);
     }
 }
 
@@ -614,7 +619,7 @@ function renderFieldsSection() {
     const { width, height } = fitCanvas(fieldsCanvas, 430);
     const modulator = makeModulator(modulatorType, Math.min(width, height), currentModulatorValueMultiplier());
     const field = makeField(fieldType, modulator, width, height);
-    const group = new ModField.FieldGroup([field], ModField.aggregateWeightedAvg);
+    const group = new modfield.FieldGroup([field], modfield.aggregateWeightedAvg);
 
     const sample = sampleFieldGroup(group, makeGrid(width, height, 12));
     drawSampleToCanvas(fieldsCanvas, sample);
@@ -635,7 +640,7 @@ function createRandomFieldModel(width, height) {
 
 function randomizeGroupFields() {
     const count = randomInt(GROUP_FIELD_COUNT_MIN, GROUP_FIELD_COUNT_MAX);
-    currentGroupFields = ModField.generateRandomFields(count, {
+    currentGroupFields = modfield.generateRandomFields(count, {
         bounds: { width: VIZ_BOUNDS.width, height: VIZ_BOUNDS.height },
         scale: Math.min(VIZ_BOUNDS.width, VIZ_BOUNDS.height),
     });
@@ -659,11 +664,11 @@ function randomizeFlipGroup() {
     const scale = Math.min(VIZ_BOUNDS.width, VIZ_BOUNDS.height);
 
     currentFlipGroupData = {
-        groupAFields: ModField.generateRandomFields(countA, {
+        groupAFields: modfield.generateRandomFields(countA, {
             bounds: { width: VIZ_BOUNDS.width, height: VIZ_BOUNDS.height },
             scale,
         }),
-        groupBFields: ModField.generateRandomFields(countB, {
+        groupBFields: modfield.generateRandomFields(countB, {
             bounds: { width: VIZ_BOUNDS.width, height: VIZ_BOUNDS.height },
             scale,
         }),
@@ -687,7 +692,7 @@ function updateFlipThresholdControls() {
 }
 
 function currentAggregatorFunction() {
-    return ModField[currentGroupAggregatorName] ?? ModField.aggregateWeightedAvg;
+    return modfield[currentGroupAggregatorName] ?? modfield.aggregateWeightedAvg;
 }
 
 function renderGroupsSection() {
@@ -700,7 +705,7 @@ function renderGroupsSection() {
     }
 
     const normalSize = fitCanvas(groupsCanvas, 330);
-    const group = new ModField.FieldGroup(currentGroupFields, currentAggregatorFunction());
+    const group = new modfield.FieldGroup(currentGroupFields, currentAggregatorFunction());
     const sample = sampleFieldGroup(group, makeGrid(normalSize.width, normalSize.height, 12));
     drawSampleToCanvas(groupsCanvas, sample);
 
@@ -709,9 +714,9 @@ function renderGroupsSection() {
 
     const flipSize = fitCanvas(flipgroupCanvas, 330);
     const aggregator = currentAggregatorFunction();
-    const flipGroup = new ModField.FieldFlipGroup(
-        new ModField.FieldGroup(currentFlipGroupData.groupAFields, aggregator),
-        new ModField.FieldGroup(currentFlipGroupData.groupBFields, aggregator),
+    const flipGroup = new modfield.FieldFlipGroup(
+        new modfield.FieldGroup(currentFlipGroupData.groupAFields, aggregator),
+        new modfield.FieldGroup(currentFlipGroupData.groupBFields, aggregator),
         currentFlipGroupData.flipFieldModel.field,
         currentFlipGroupData.threshold,
         aggregator,
@@ -921,8 +926,8 @@ function populateControls() {
 }
 
 function start() {
-    if (typeof ModField === 'undefined') {
-        console.error('ModField bundle not loaded.');
+    if (typeof modfield === 'undefined') {
+        console.error('modfield bundle not loaded.');
         return;
     }
 

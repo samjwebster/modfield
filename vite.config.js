@@ -9,7 +9,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/main.js'),
-      name: 'ModField',
+      name: 'modfield',
       fileName: (format) => `modfield.${format}.js`
     }
   }

@@ -17,11 +17,6 @@ var e = Math.PI * 2, t = (e, t, n, r) => {
 	constructor(e, t, n) {
 		this.pos = e, this.slope = t, this.modulator = n, this.weight = 1;
 	}
-	debug(e) {
-		if (!e) return;
-		let t = this.pos[1] + this.slope * (0 - this.pos[0]), n = e.canvas?.width || 800, r = this.pos[1] + this.slope * (n - this.pos[0]);
-		e.strokeStyle = "red", e.beginPath(), e.moveTo(0, t), e.lineTo(n, r), e.stroke();
-	}
 	dist(e) {
 		let [t, n] = e, [r, i] = this.pos, a = this.slope, o = a, s = i - a * r;
 		return Math.abs(o * t + -1 * n + s) / Math.sqrt(o * o + 1);
@@ -259,14 +254,14 @@ var M = class {
 		return t ? this.groupB.normalize(e) : this.groupA.normalize(e);
 	}
 }, P = {
-	aggregateWeightedAvg: 1.4,
-	aggregateWeightedMedian: .6,
-	aggregateSpread: .4,
-	aggregateMin: .3,
-	aggregateMax: .3,
-	aggregateWeightedRandom: .2,
-	aggregateAlternating: .25,
-	aggregateWeightedStdDev: .15
+	aggregateWeightedAvg: 1.5,
+	aggregateWeightedMedian: .5,
+	aggregateSpread: .5,
+	aggregateAlternating: .5,
+	aggregateWeightedStdDev: .5,
+	aggregateMin: .1,
+	aggregateMax: .1,
+	aggregateWeightedRandom: .01
 }, F = {
 	constant: 1.2,
 	flippingConstant: .66,
@@ -351,8 +346,8 @@ function W(e, t) {
 	return e == null ? null : t[e] ?? e;
 }
 function G(e = {}) {
-	let { aggregatorType: t = null, aggregatorTypes: n = Object.keys(P), aggregatorWeights: r = P } = e, i = n.map((e) => W(e, z));
-	return z[W(t, z) ?? U(r, i)] ?? w;
+	let { aggregatorTypes: t = Object.keys(P), aggregatorWeights: n = P } = e;
+	return z[U(n, t.map((e) => W(e, z)))] ?? w;
 }
 function K(e, t = .25, n = [[-3, -.5], [1.5, 3]]) {
 	let r = Math.max(e.width, e.height), i = [o(e.width), o(e.height)];
@@ -368,93 +363,111 @@ function q(e, t) {
 	return n;
 }
 function J(e = {}) {
-	let { modulatorType: t = null, modulatorTypes: n = Object.keys(F), modulatorWeights: r = F, size: i = 100, modAffect: a = 1, invertChance: s = .5, valueMode: c = "bimodal", smallValueRange: l = [.0025, .0075], largeValueRange: u = [.25, 1.75], valueChance: d = .5, rateRange: f = [.01, .05], numStepsChoices: p = [
-		3,
-		4,
-		5,
-		6
-	], dutyCycleRange: m = [.35, .7] } = e, h = n.map((e) => H(e, L)), g = H(t, L) ?? U(r, h), _ = c === "uniform" ? o(l[0], u[1]) : o() < d ? o(l[0], l[1]) : o(u[0], u[1]), v = Math.round(_ * a * i), y;
-	return y = g === "falloff" ? B.falloff(v, { rate: o(f[0], f[1]) }) : g === "step" ? B.step(v, { numSteps: o(p) }) : g === "squareWave" ? B.squareWave(v, { dutyCycle: o(m[0], m[1]) }) : (B[g] ?? B.constant)(v), y.inverted = o() < s, y;
+	let { scale: t = null, modulatorTypes: n = Object.keys(F), modulatorWeights: r = F, modRange: i = [.01, 1], modAffect: a = 1, invertChance: s = .5, falloffRateRange: c = [.01, .05], stepNumStepsRange: l = [5, 20], squarePeakSize: u = [.35, .7] } = e;
+	if (t == null) throw Error("Cannot generate a random modulator without a scale specified (designed to be min(width, height) of the viewing space). Please provide 'scale' in the modulatorOptions.");
+	let d = U(r, n.map((e) => H(e, L))), f = o(i[0], i[1]) * t * a, p = Math.round(f), m;
+	return m = d === "falloff" ? B.falloff(p, { rate: o(...c) }) : d === "step" ? B.step(p, { numSteps: Math.floor(o(...l)) }) : d === "squareWave" ? B.squareWave(p, { dutyCycle: o(...u) }) : (B[d] ?? B.constant)(p), m.inverted = o() < s, m;
 }
-function Y(t = {}) {
-	let { fieldType: n = null, fieldTypes: r = Object.keys(I), fieldWeights: i = I, bounds: a = {
-		width: 1e3,
-		height: 1e3
-	}, modulatorOptions: s = {}, modulator: c = null, outsideChance: l = .25, outsideRange: u = [[-3, -.5], [1.5, 3]], weightRange: d = [0, 1], lineSlopeRange: f = [-e, e], widthRange: p = [.1, .25], heightRange: m = [.1, .25], sineFrequencyRange: h = [.0075, .0125], sineAmplitudeRange: g = [.25, .5], vortexTurnRateRange: _ = [.05, 3], radialSpacingRange: v = [.0125, .075], radialWobbleRange: y = [0, .1], cellularSeedCountRange: b = [3, 10], scale: x = Math.min(a.width, a.height) } = t, S = r.map((e) => H(e, R)), C = H(n, R) ?? U(i, S), w = t.position ?? K(a, l, u), T = {
-		modulator: c ?? J({
-			size: x,
-			...s
+function Y(t = {}, n = {}) {
+	let { bounds: r = null, scale: i = Math.min(r.width, r.height), fieldTypes: a = Object.keys(I), fieldWeights: s = I, outsideChance: c = .25, outsideRange: l = [[-3, -.5], [1.5, 3]], weightRange: u = [0, 1], lineSlopeRange: d = [-e, e], widthRange: f = [.1, .25], heightRange: p = [.1, .25], sineFrequencyRange: m = [.0075, .0125], sineAmplitudeRange: h = [.25, .5], vortexTurnRateRange: g = [.05, 3], radialSpacingRange: _ = [.0125, .075], radialWobbleRange: v = [0, .1], cellularSeedCountRange: y = [3, 10] } = t;
+	if (r == null) throw Error("Cannot generate a random field without bounds specified. Please provide 'bounds' in the fieldOptions.");
+	let b = U(s, a.map((e) => H(e, R))), x = K(r, c, l), S = {
+		modulator: J({
+			scale: i,
+			...n
 		}),
-		scale: x
-	}, E;
-	if (C === "line") E = V.line(w, {
-		...T,
-		slope: o(f[0], f[1])
+		scale: i
+	}, C;
+	if (b === "line") C = V.line(x, {
+		...S,
+		slope: o(...d)
 	});
-	else if (C === "segment") E = V.segment(w, {
-		...T,
-		endPosition: [o(a.width), o(a.height)]
+	else if (b === "segment") C = V.segment(x, {
+		...S,
+		endPosition: [o(r.width), o(r.height)]
 	});
-	else if (C === "circle") E = V.circle(w, T);
-	else if (C === "oval" || C === "rect") {
-		let e = o(p[0], p[1]) * x, t = o(m[0], m[1]) * x;
-		E = V[C](w, {
-			...T,
+	else if (b === "circle") C = V.circle(x, S);
+	else if (b === "oval" || b === "rect") {
+		let e = o(...f) * i, t = o(...p) * i;
+		C = V[b](x, {
+			...S,
 			width: e,
 			height: t
 		});
-	} else if (C === "sine") E = V.sine(w, {
-		...T,
-		frequency: o(h[0], h[1]),
+	} else if (b === "sine") C = V.sine(x, {
+		...S,
+		frequency: o(...m),
 		angle: o() * e,
-		amplitude: o(g[0], g[1]) * x
+		amplitude: o(...h) * i
 	});
-	else if (C === "vortex") E = V.vortex(w, {
-		...T,
-		turnRate: o(_[0], _[1])
+	else if (b === "vortex") C = V.vortex(x, {
+		...S,
+		turnRate: o(...g)
 	});
-	else if (C === "radial") E = V.radial(w, {
-		...T,
-		waveSpacing: o(v[0], v[1]) * x,
-		wobble: o(y[0], y[1]) * x
+	else if (b === "radial") C = V.radial(x, {
+		...S,
+		waveSpacing: o(..._) * i,
+		wobble: o(...v) * i
 	});
-	else if (C === "mirror") E = V.mirror(w, {
-		...T,
+	else if (b === "mirror") C = V.mirror(x, {
+		...S,
 		axisAngle: o() * e
 	});
-	else if (C === "cellular") {
-		let e = Math.floor(o(b[0], b[1]));
-		E = V.cellular(w, {
-			...T,
-			seedPoints: q(a, e)
+	else if (b === "cellular") {
+		let e = Math.floor(o(...y));
+		C = V.cellular(x, {
+			...S,
+			seedPoints: q(r, e)
 		});
-	} else E = V.circle(w, T);
-	return E.weight = o(d[0], d[1]), E;
+	} else C = V.circle(x, S);
+	return C.weight = o(...u), C;
 }
-function X(e, t = {}) {
-	let n = [];
-	for (let r = 0; r < e; r += 1) n.push(Y(t));
-	return n;
+function X(e, t = {}, n = {}) {
+	let r = [];
+	for (let i = 0; i < e; i += 1) r.push(Y(t, n));
+	return r;
 }
-function Z(e = 4, t = {}) {
-	let { fields: n = null, aggregator: r = null, ...i } = t;
-	return new M(n ?? X(e, i), r ?? G(i));
+function Z(e = {}) {
+	let { w: t = null, h: n = null, fieldCountRange: r = [4, 8], aggregatorOptions: i = {}, fieldOptions: a = {}, modulatorOptions: s = {} } = e;
+	if (t === null || n === null) throw Error("Cannot generate a random field group without width and height specified. Please provide 'w' and 'h' in the groupOptions.");
+	let c = {
+		width: t,
+		height: n
+	};
+	a.bounds = c, s.bounds = c;
+	let l = X(Math.floor(o(...r)), a, s), { aggregatorTypes: u = Object.keys(P), aggregatorWeights: d = P } = i;
+	return new M(l, G(i));
 }
 function Q(e = {}) {
-	let { groupAFields: t = null, groupBFields: n = null, groupAFieldCount: r = 4, groupBFieldCount: i = 4, groupAOptions: a = {}, groupBOptions: s = {}, flipField: c = null, flipFieldOptions: l = {}, aggregator: u = null, threshold: d = null, thresholdRange: f = [.25, .75] } = e, p = u ?? G(e);
-	return new N(t ?? Z(r, {
-		...a,
-		aggregator: a.aggregator ?? p
-	}), n ?? Z(i, {
-		...s,
-		aggregator: s.aggregator ?? p
-	}), c ?? Y({
-		...l,
+	let { w: t = null, h: n = null, groupAFieldCountRange: r = [4, 8], groupAFieldOptions: i = {}, groupAModulatorOptions: a = {}, groupAAggregatorOptions: s = {}, groupBFieldCountRange: c = [4, 8], groupBFieldOptions: l = {}, groupBModulatorOptions: u = {}, groupBAggregatorOptions: d = {}, flipFieldOptions: f = {}, flipFieldModulatorOptions: p = {}, flipFieldThresholdRange: m = [.25, .75] } = e;
+	return new N(Z({
+		w: t,
+		h: n,
+		fieldCountRange: r,
+		aggregatorOptions: s,
+		fieldOptions: i,
+		modulatorOptions: a
+	}), Z({
+		w: t,
+		h: n,
+		fieldCountRange: c,
+		aggregatorOptions: d,
+		fieldOptions: l,
+		modulatorOptions: u
+	}), Y({
+		bounds: {
+			width: t,
+			height: n
+		},
+		...f,
 		modulatorOptions: {
-			modulatorType: "decay",
-			...l.modulatorOptions
+			bounds: {
+				width: t,
+				height: n
+			},
+			...p
 		}
-	}), d ?? o(f[0], f[1]), p);
+	}), o(thresholdRange[0], thresholdRange[1]), resolvedAggregator);
 }
 //#endregion
 export { b as BinaryModulator, g as CellularField, s as CircleField, _ as ConstantModulator, h as CrossField, P as DEFAULT_AGGREGATOR_WEIGHTS, I as DEFAULT_FIELD_WEIGHTS, F as DEFAULT_MODULATOR_WEIGHTS, C as DecayModulator, y as FalloffModulator, N as FieldFlipGroup, M as FieldGroup, v as FlippingConstantModulator, c as LineField, d as OvalField, m as RadialField, u as RectField, l as SegmentField, f as SineField, S as SquareWaveModulator, x as StepModulator, e as TAU, p as VortexField, k as aggregateAlternating, E as aggregateMax, T as aggregateMin, j as aggregateSpread, w as aggregateWeightedAvg, O as aggregateWeightedMedian, D as aggregateWeightedRandom, A as aggregateWeightedStdDev, a as constrain, r as degrees, t as dist, Y as generateRandomField, Z as generateRandomFieldGroup, X as generateRandomFields, Q as generateRandomFlipFieldGroup, J as generateRandomModulator, i as lerp, n as radians, o as random };

@@ -28,22 +28,12 @@ const shapeModeSelect = document.getElementById('shape-mode');
 const shapePaddingSlider = document.getElementById('shape-padding');
 const shapePaddingValue = document.getElementById('shape-padding-value');
 const colorMixingToggle = document.getElementById('color-mixing');
+const greyscaleToggle = document.getElementById('greyscale');
 const modAffectSlider = document.getElementById('mod-affect');
 const modAffectValue = document.getElementById('mod-affect-value');
 const fieldCountMinInput = document.getElementById('field-count-min');
 const fieldCountMaxInput = document.getElementById('field-count-max');
 const resetSettingsBtn = document.getElementById('reset-settings');
-
-const aggregators = [
-    ModField.aggregateWeightedAvg,
-    ModField.aggregateWeightedMedian,
-    ModField.aggregateWeightedRandom,
-    ModField.aggregateAlternating,
-    ModField.aggregateWeightedStdDev,
-    ModField.aggregateSpread,
-    ModField.aggregateMin,
-    ModField.aggregateMax,
-];
 
 const config = {
     cellSize: DEFAULT_CELL_SIZE,
@@ -52,6 +42,7 @@ const config = {
     shapeMode: 'rounded-rect',
     shapePadding: DEFAULT_SHAPE_PADDING,
     colorMixing: true,
+    greyscale: false,
     modAffect: DEFAULT_MOD_AFFECT,
 };
 
@@ -228,6 +219,10 @@ function generateRandomColors() {
 }
 
 function paletteColorAtNormalizedPosition(t) {
+    if(config.greyscale) {
+        return { h: 0, s: 0, l: clamp(t, 0, 1) * 100 };
+    }
+
     if (!activePaletteColors.length) {
         return { h: 28, s: 40, l: 50 };
     }
@@ -286,20 +281,17 @@ function applyPaletteToUi() {
 }
 
 function createRandomFieldGroup() {
-    const fieldCount = config.fieldMin + Math.floor(Math.random() * (config.fieldMax - config.fieldMin + 1));
-    const fields = ModField.generateRandomFields(fieldCount, {
-        bounds: { width: SAMPLE_WIDTH, height: SAMPLE_HEIGHT },
-        scale: SAMPLE_WIDTH,
+    const fg = modfield.generateRandomFieldGroup({
+        w: SAMPLE_WIDTH,
+        h: SAMPLE_HEIGHT,
+        fieldCountRange: [config.fieldMin, config.fieldMax],
         modulatorOptions: {
             modAffect: config.modAffect,
         },
     });
-    const aggregator = pick(aggregators);
 
     return {
-        group: new ModField.FieldGroup(fields, aggregator),
-        fieldCount,
-        aggregatorName: aggregator.name.replace('aggregate', ''),
+        group: fg,
     };
 }
 
@@ -483,8 +475,8 @@ function p5Sketch(p) {
 }
 
 function refresh() {
-    if (typeof ModField === 'undefined') {
-        console.error('ModField not loaded');
+    if (typeof modfield === 'undefined') {
+        console.error('modfield.js not loaded');
         return;
     }
 
@@ -545,6 +537,7 @@ function updateConfigDisplay() {
     shapePaddingValue.textContent = formatPadding(config.shapePadding);
     modAffectValue.textContent = formatModAffect(config.modAffect);
     colorMixingToggle.checked = config.colorMixing;
+    greyscaleToggle.checked = config.greyscale;
 }
 
 function resetSettingsToDefaults() {
@@ -555,6 +548,8 @@ function resetSettingsToDefaults() {
     shapeModeSelect.value = config.shapeMode;
     config.colorMixing = true;
     colorMixingToggle.checked = true;
+    config.greyscale = false;
+    greyscaleToggle.checked = false;
 
     fieldCountMinInput.value = String(DEFAULT_FIELD_MIN);
     fieldCountMaxInput.value = String(DEFAULT_FIELD_MAX);
@@ -596,6 +591,11 @@ function wireConfigControls() {
         rerenderWithCurrentFieldGroup({ reapplyPalette: true });
     });
 
+    greyscaleToggle.addEventListener('change', () => {
+        config.greyscale = greyscaleToggle.checked;
+        rerenderWithCurrentFieldGroup({ reapplyPalette: true });
+    });
+
     modAffectSlider.addEventListener('input', () => {
         setModAffect(Number(modAffectSlider.value), false);
     });
@@ -614,7 +614,7 @@ function wireConfigControls() {
 }
 
 function start() {
-    if (typeof ModField === 'undefined') {
+    if (typeof modfield === 'undefined') {
         console.error('Could not load modfield bundle.');
         return;
     }

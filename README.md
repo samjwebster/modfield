@@ -49,7 +49,7 @@ import {
 } from 'modfield';
 
 // 1. Quick random field group generation
-const random_group = generateRandomFieldGroup()
+const random_group = generateRandomFieldGroup({w: width, h: height})
 const value = random_group.mod([25, 75]);
 const normalized = random_group.normalize(value);
 console.log(normalized) // 0-1 normalized value
@@ -117,43 +117,35 @@ The package exports helpers for generating randomized fields and modulators.
 
 ```javascript
 import {
-  generateRandomModulator,
-  generateRandomField,
-  generateRandomFields,
   generateRandomFieldGroup,
-  generateRandomFlipFieldGroup
 } from 'modfield';
 
-const modulator = generateRandomModulator({
-  modulatorType: 'decay',
-  size: 200,
-  invertChance: 0.25
-});
+// Groups are the easiest way to get started using modfields; they use all types of components introduced in the library
 
-const field = generateRandomField({
-  fieldType: 'circle',
-  bounds: { width: 800, height: 800 },
-  modulatorOptions: {
-    modulatorType: 'decay'
+// Generates a random group with 3-10 fields in the specified type set, with group values aggregated by the weighted median across fields
+let group = generateRandomFieldGroup({
+  w: width, h: height // required
+  fieldCountRange: [3, 10],
+  fieldOptions: {
+    fieldTypes: ['circle', 'oval', 'sine'],
+  },
+  aggregatorOptions: {
+    aggregatorTypes: ['aggregateWeightedMedian'],
   }
 });
 
-const fields = generateRandomFields(8, {
-  bounds: { width: 800, height: 800 },
-  fieldTypes: ['circle', 'rect', 'sine'],
-  modulatorTypes: ['constant', 'decay', 'squareWave']
-});
+let samples = [];
+for(let i = 0; i < 100; i += 1) {
+  let pos = [random()*width, random()*height];
+  samples.push({
+    pos: pos,
+    val: group.mod(pos);
+  });
+}
 
-const group = generateRandomFieldGroup(6, {
-  fieldTypes: ['circle', 'oval', 'sine'],
-  aggregatorType: 'aggregateWeightedMedian'
-});
+// while modfield tries to return values on 0-1, there is chance values will be outside of that range. Groups will always track the minimum and maximum generated value, and the normalize() method will map a value from 0-1 between those extremes
+samples = samples.map(s => s.val = group.normalize(s.val));
 
-const flipGroup = generateRandomFlipFieldGroup({
-  groupAFieldCount: 4,
-  groupBFieldCount: 5,
-  thresholdRange: [0.3, 0.7]
-});
 ```
 
 ## Available Classes and Functions
