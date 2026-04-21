@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "modfield",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple JavaScript library for creative coding that combines modulo operations, distance functions, and more to produce interesting, locally similar patterns.",
   "files": [
     "dist"
