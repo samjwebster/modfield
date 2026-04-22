@@ -66,8 +66,8 @@ class Composition {
             }
         });
 
-        warmFieldGroup(this.heightGroup, width, height, 30, 30);
-        warmFieldGroup(this.colorGroup, width, height, 30, 30);
+        // warmFieldGroup(this.heightGroup, width, height, 30, 30);
+        // warmFieldGroup(this.colorGroup, width, height, 30, 30);
 
         this.grid = [];
         for(let i = 0; i < countX; i++) {
@@ -262,12 +262,25 @@ class Cell {
         endShape(CLOSE);
         pop();
 
-        gradFill(
-            [0, max(this.corners_upper_iso[2][1], this.corners_upper_iso[3][1])],
-            [0, min(this.corners_iso[2][1], this.corners_iso[3][1])],
-            colMain,
-            colDark
-        );
+        try {
+            gradFill(
+                [0, max(this.corners_upper_iso[2][1], this.corners_upper_iso[3][1])],
+                [0, min(this.corners_iso[2][1], this.corners_iso[3][1])],
+                colMain,
+                colDark
+            );
+
+        } catch(e) {
+            console.log("Modfield-related values:")
+            console.log(this.heightVal, this.reliefVal, this.colorMix);
+            console.log("Colors involved in gradFill:");
+            console.log(colMain, colDark);
+            console.log("Gradient positions:");
+            console.log([0, max(this.corners_upper_iso[2][1], this.corners_upper_iso[3][1])]);
+            console.log([0, min(this.corners_iso[2][1], this.corners_iso[3][1])]);
+            throw e;
+        }
+        
         stroke(colDarker);
         beginShape();
         vertex(...this.corners_iso[2]);
@@ -368,6 +381,7 @@ function warmFieldGroup(group, maxX, maxY, stepsX, stepsY) {
 function sampleNormalized(group, pos) {
     pos = [pos[0], pos[1]];
     const value = group.mod(pos);
+    // console.log(value, group.normalize(value));
     return group.normalize(value);
 }
 

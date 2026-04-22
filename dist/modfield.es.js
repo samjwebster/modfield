@@ -255,7 +255,8 @@ var P = class {
 		return this.minSeen = Math.min(this.minSeen, r), this.maxSeen = Math.max(this.maxSeen, r), r;
 	}
 	normalize(e) {
-		return this.normalize_mode === "pcts" ? this.normalize_pcts(e) : this.normalize_minmax(e);
+		let t;
+		return t = this.normalize_mode === "pcts" ? this.normalize_pcts(e) : this.normalize_minmax(e), a(t, 0, 1);
 	}
 	normalize_minmax(e) {
 		let t = this.maxSeen - this.minSeen;

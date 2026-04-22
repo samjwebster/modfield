@@ -4,6 +4,7 @@ All updates are listed in reverse chronological order (newest first, oldest last
 # 1.2.0 (4/22/2026)
 - Improvement: Added a new default normalization method based on 5th and 95% statistical percentiles. To revert to the original minimum-maximum normalization, update `fg.normalize_mode` from `pcts` to `minmax`. 
 - Improvement: FieldGroups now have a warming stage for computing normalization-related values, which computes mods for `warmingSteps=1000` steps. This can be updated directly or through a new method `setWarmingSteps(numSteps)`. 
+- Minor Change: FieldGroup values that are normalized using `fg.normalize()` are constrained on [0, 1]. This is not enforced when directly calling `fg.normalize_minmax()` or `fg.normalize_pcts()`.
 
 # 1.1.0 (4/21/2026)
 - Breaking Change: Renamed the global library namespace from `ModField` to `modfield`. In code, change any calls using `ModField.function()` to `modfield.function()`.

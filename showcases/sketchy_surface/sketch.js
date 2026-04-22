@@ -96,13 +96,6 @@ class Composition {
             w: width, h: height,
         });
 
-        // warm the field group for normalization
-        let numWarm = 1000;
-        for(let i = 0; i < numWarm; i++) {
-            fg.mod([random(width), random(height)]);
-            fg2.mod([random(width), random(height)]);
-        }
-
         let chunk_interval = 0.33;
 
         for(let ix = 0; ix < ptsToDo.length; ix++) {
@@ -125,7 +118,7 @@ class Composition {
             // if(modResult <= 1) continue;
 
             let chunk_rem = n % chunk_interval;
-            if(chunk_rem > chunk_interval * 0.33) continue;
+            if(chunk_rem > chunk_interval * 0.10) continue;
 
             // if(a < modulatorOffset) lerp(a, modulatorOffset, modT);
             // else if(a > modulatorOffset) lerp(a, modulatorOffset+PI, modT);
